@@ -17,7 +17,7 @@ const state = {
   over : 2,
 }
 // control the game
-document.addEventListener("click", function(evt){
+cvs.addEventListener("click", function(evt){
   switch (state.current) {
     case state.getReady:
       state.current = state.game;
@@ -38,15 +38,15 @@ const bg = {
     w : 275,
     h : 226,
     x : 0,
-    y : cvs.height - 226
+    y : cvs.height - 226,
 
     draw : function(){
         ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h);
 
         ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x + this.w, this.y, this.w, this.h);
-      }
-}
+    }
 
+}
 //foreground
 
 const fg = {
@@ -88,23 +88,30 @@ const bird = {
       flap : function(){
 
       },
+      update: function(){
+        // IF THE GAME STATE IS GET READY STATE, THE BIRD MUST FLAP SLOWLY
+        this.period = state.current == state.getReady ? 10 : 5;
+        // WE INCREMENT THE FRAME BY 1, EACH PERIOD
+        this.frame += frames%this.period == 0 ? 1 : 0;
+        // FRAME GOES FROM 0 To 4, THEN AGAIN TO 0
+        this.frame = this.frame%this.animation.length;
  }
- // getReady
+ // GET READY MESSAGE
+  const getReady = {
+    sX : 0,
+    sY : 228,
+    w : 173,
+    h : 152,
+    x : cvs.width/2 - 173/2,
+    y : 80,
 
- const getReady = {
-   sX: 0,
-   sY: 228,
-   w : 173,
-   h : 152,
-   x : cvs.width/2 - 173/2
-   y : 80,
+    draw: function(){
+        if(state.current == state.getReady){
+            ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h);
+        }
+    }
 
-   draw : function(){
-     if(state.current == state.getReady)
-     ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h);
-
-   }
- }
+}
 
  // gameOver
 
@@ -116,10 +123,11 @@ const bird = {
    x : cvs.width/2 - 225/2
    y : 90,
 
-   draw : function(){
-     ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h);
-
-   }
+   draw: function(){
+        if(state.current == state.over){
+            ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h);
+        }
+    }
  }
 // DRAW
 function draw(){
@@ -136,6 +144,7 @@ function draw(){
 // update
 
 function update(){
+   bird.update();
 
 }
 
